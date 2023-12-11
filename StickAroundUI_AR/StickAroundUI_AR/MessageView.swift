@@ -43,7 +43,7 @@ struct MessageView: View {
             .background(RoundedRectangle(cornerRadius: 200).fill(message.backgroundColor.opacity(0.85)).shadow(radius: 100))
             .border(Color.red, width: 4)
             
-            CanvasView(pkCanvas: pkCanvas, toolPicker: toolPicker).border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/, width: 10)
+//            CanvasView(pkCanvas: pkCanvas, toolPicker: toolPicker)
         }
     }
 

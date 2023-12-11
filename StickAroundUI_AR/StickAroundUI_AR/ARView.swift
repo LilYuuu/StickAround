@@ -34,6 +34,9 @@ class SimpleARView: ARView {
     // Dictionary for storing ARPlaneAnchor(s) with AnchorEntity(s)
     var anchorEntityMap: [ARPlaneAnchor: AnchorEntity] = [:]
     
+    // to save the tapped plane entity
+    var tappedPlane: MessagePlaneEntity?
+    
     init(frame: CGRect, viewModel: ViewModel) {
         self.viewModel = viewModel
         super.init(frame: frame)
@@ -55,6 +58,7 @@ class SimpleARView: ARView {
         self.setupARSession()
 //        self.setupScene()
         self.setupSubscriptions()
+        self.setupTapGesture()
     }
     
     private func setupARSession() {
@@ -140,6 +144,56 @@ class SimpleARView: ARView {
             self.resetScene()
         }.store(in: &subscriptions)
     }
+    
+    private func setupTapGesture() {
+        print("tap gesture set up")
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        tapGesture.delegate = self
+        self.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
+        let location = gesture.location(in: self)
+
+        print("Tapped at location: \(location)")
+        
+        // Perform hit test to check if the tap intersects with any entities in the scene
+        if let tappedEntity = self.entity(at: location) {
+            print("Tapped entity: \(tappedEntity)")
+            print("Tapped parent: \(tappedEntity.parent)")
+            
+            if let messagePlaneEntity = tappedEntity.parent as? MessagePlaneEntity {
+                // Check if the tapped entity is different from the currently selected one
+                if messagePlaneEntity != tappedPlane {
+                    
+                    // Update the selected entity
+                    tappedPlane = messagePlaneEntity
+                    
+                    print("Set tapped plane scale to [1, 1, 1]")
+                    
+                    // Update the size of the tapped entity
+                    messagePlaneEntity.messageEntity.setScale([1, 1, 1], relativeTo: nil)
+                    messagePlaneEntity.modelEntity.setScale([0, 0, 0], relativeTo: nil)
+                    
+                    // Reset the size of all the other entities
+                    self.anchorEntityMap.values.forEach { anchorEntity in
+                        // let messageEntity = anchorEntity.findEntity(named: "message-plane") as? MessagePlaneEntity
+                        let messageEntities: [MessagePlaneEntity] = anchorEntity.children.compactMap { entity in
+                            return entity as? MessagePlaneEntity
+                        }
+                        
+                        messageEntities.forEach { entity in
+                            if (entity != tappedPlane) {
+                                entity.messageEntity.setScale([0, 0, 0], relativeTo: nil)
+                                entity.modelEntity.setScale([0, 0, 0], relativeTo: nil)
+                            }
+                            
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Implement ARSessionDelegate protocol
@@ -181,6 +235,9 @@ extension SimpleARView: ARSessionDelegate {
                 // Create a message plane entity based on the plane anchor
                 self.messagePlaneEntity =
                 MessagePlaneEntity(message: viewModel.message, planeAnchor: $0)
+                
+                // Hide the message entity when generated
+                self.messagePlaneEntity?.messageEntity.setScale([0, 0, 0], relativeTo: nil)
                 
                 // Add message plane entity to anchor entity
                 anchorEntity.addChild(self.messagePlaneEntity!)

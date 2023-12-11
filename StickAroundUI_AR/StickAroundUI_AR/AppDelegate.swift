@@ -7,7 +7,7 @@
 
 import UIKit
 import SwiftUI
-import FirebaseCore
+//import FirebaseCore
 
 
 
@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.makeKeyAndVisible()
         
         // configure firestore
-        FirebaseApp.configure()
+//        FirebaseApp.configure()
         
         return true
     }

@@ -16,7 +16,7 @@ struct ComposeView: View {
 
     let locations = ["Wall", "Window", "Ceiling", "Table", "Floor"]
     @State private var locationSelection = "Wall"
-    
+        
     
 //    @State var canvasView = PKCanvasView()
 //    @State var toolPicker: PKToolPicker? = PKToolPicker()
@@ -52,14 +52,27 @@ struct ComposeView: View {
                         .background(Color.white.opacity(0.75).ignoresSafeArea())
                         
                         // body
+                        
+                        HStack {
+                            Spacer()
+                            MessageView(message: $viewModel.message)
+                                .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
+                                .scaleEffect(geometry.size.width / 2048 / 1.5) // TODO: magic number?
+//                                    .border(Color.black)
+                            Spacer()
+                        }
+                        .padding()
+                        .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
+                        
                         List {
-                            Section {
+                            Section(/*header: Text("Write the note here").bold().foregroundStyle(Color.black).font(.body)*/) {
                                 TextField("Name", text: $viewModel.message.sender) {
                                 }
                                 TextField("Leave your message here", text: $viewModel.message.text) {
                                 }
                                 .frame(height: 60, alignment: .top)
                             }
+                            .headerProminence(.increased)
                             
                             Section(header: Text("Where to stick the note?").bold().foregroundStyle(Color.black).font(.body)) {
                                 Picker("", selection: $locationSelection) {
@@ -104,17 +117,17 @@ struct ComposeView: View {
                             .listRowBackground(Color.clear)
                             .listSectionSpacing(.compact)
                             
-                            HStack {
-                                Spacer()
-                                MessageView(message: $viewModel.message)
-                                    .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
-                                    .scaleEffect(geometry.size.width / 2048 / 1.5) // TODO: magic number?
-//                                    .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
-                                Spacer()
-                            }
-//                            .listRowBackground(Color.clear)
-//                            .border(.blue)
-                            .listRowSpacing(0)
+//                            HStack {
+//                                Spacer()
+//                                MessageView(message: $viewModel.message)
+//                                    .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
+//                                    .scaleEffect(geometry.size.width / 2048 / 1.5) // TODO: magic number?
+////                                    .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
+//                                Spacer()
+//                            }
+////                            .listRowBackground(Color.clear)
+////                            .border(.blue)
+//                            .listRowSpacing(0)
                             
                             HStack {
                                 Spacer()

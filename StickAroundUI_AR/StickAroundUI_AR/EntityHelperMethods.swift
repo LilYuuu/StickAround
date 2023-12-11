@@ -23,19 +23,24 @@ class MessagePlaneEntity: Entity {
 
         self.planeMesh = .generatePlane(width: planeAnchor.planeExtent.width, depth: planeAnchor.planeExtent.height)
         
-        var transparentMaterial = SimpleMaterial(color: UIColor(.white).withAlphaComponent(0.0), isMetallic: false)
+        var transparentMaterial = SimpleMaterial(color: UIColor(.gray).withAlphaComponent(0.5), isMetallic: false)
         transparentMaterial.tintColor = .white.withAlphaComponent(0.999)
         //        transparentMaterial.color = Color(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         self.modelEntity = ModelEntity(mesh: self.planeMesh, materials: [transparentMaterial])
         // for debug
 //        self.modelEntity = ModelEntity(mesh: self.planeMesh, materials: [UnlitMaterial(color: .red)])
         
+        // generate collision shapes for tapping detection
+        self.modelEntity.generateCollisionShapes(recursive: true)
+        
         super.init()
         
         self.addChild(self.messageEntity)
-        
         self.addChild(self.modelEntity)
         self.messageEntity.position.y += 0.001
+        
+        // Enable tapping detection on the entity
+        
     }
     
     required init() {
