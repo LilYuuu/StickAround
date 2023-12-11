@@ -16,10 +16,12 @@ struct CanvasView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> PKCanvasView {
         
-        print("PKCanvasView initialized")
+//        print("PKCanvasView initialized")
         
         pkCanvas.backgroundColor = .clear
         pkCanvas.drawingPolicy = .anyInput
+        
+//        pkCanvas.contentSize = CGSize(width: 100, height: 100)
         
         toolPicker?.setVisible(true, forFirstResponder: pkCanvas)
         toolPicker?.addObserver(pkCanvas)

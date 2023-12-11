@@ -22,7 +22,7 @@ struct ContentView : View {
                         .padding()
                     Spacer()
                     
-                    NavigationLink(destination: InboxView().navigationBarBackButtonHidden(true)) {
+                    NavigationLink(destination: InboxView(viewModel: viewModel).navigationBarBackButtonHidden(true)) {
                         HStack {
                             Text("Inbox")
                                 .font(.title2)

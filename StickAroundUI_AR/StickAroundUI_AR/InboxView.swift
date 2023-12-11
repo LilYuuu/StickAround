@@ -10,6 +10,8 @@ import SwiftUI
 struct InboxView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
+    @StateObject var viewModel: ViewModel
+    
     let testMsg = Message(sender: "El", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sodales posuere augue mollis posuere. Curabitur lectus massa, suscipit vitae malesuada in, ultrices quis nulla.", location: "Ceiling", time: "2023-10-25 15:22:42", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
 
     var body: some View {
@@ -30,7 +32,7 @@ struct InboxView: View {
                             .frame(alignment: .center)
                             
                         Spacer()
-                        NavigationLink(destination: NoteDisplayView()) {
+                        NavigationLink(destination: NoteDisplayView(viewModel: viewModel)) {
                             Text("Display All")
                                 .foregroundStyle(Color.black)
                         }
@@ -117,5 +119,5 @@ struct UnreadMessageItem: View {
 }
 
 #Preview {
-    InboxView()
+    InboxView(viewModel: ViewModel())
 }

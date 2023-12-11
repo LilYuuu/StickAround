@@ -14,8 +14,8 @@ struct MessageView: View {
 //    @StateObject var viewModel: ViewModel
     @Binding var message: Message
 
-    @State var pkCanvas = PKCanvasView()
-    @State var toolPicker: PKToolPicker? = PKToolPicker()
+//    @State var pkCanvas = PKCanvasView()
+//    @State var toolPicker: PKToolPicker? = PKToolPicker()
 
     var body: some View {
         ZStack {
@@ -41,9 +41,20 @@ struct MessageView: View {
             .padding(300)
             .frame(width: 2000, height: 2000)
             .background(RoundedRectangle(cornerRadius: 200).fill(message.backgroundColor.opacity(0.85)).shadow(radius: 100))
-            .border(Color.red, width: 4)
+//            .border(Color.red, width: 4)
             
-//            CanvasView(pkCanvas: pkCanvas, toolPicker: toolPicker)
+//            Image("textIconFill").resizable()
+//                .frame(width: 2000, height: 2000).border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
+            if let drawing = message.drawing {
+                Image(uiImage: drawing).resizable()
+//                    .padding(300)
+                    .frame(width: 1800, height: 1800)
+//                    .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
+            } else {
+//                return
+            }
+            
+            
         }
     }
 
@@ -57,6 +68,8 @@ struct Message {
     var backgroundColor: Color
     var fontColor: Color
     var fontSize: CGFloat
+    
+    var drawing: UIImage?
 }
 
 //#Preview {

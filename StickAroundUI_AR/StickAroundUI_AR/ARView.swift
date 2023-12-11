@@ -17,6 +17,7 @@ struct ARViewContainer: UIViewRepresentable {
     let viewModel: ViewModel
     
     func makeUIView(context: Context) -> ARView {
+        print("AR view initialized")
         let arView = SimpleARView(frame: .zero, viewModel: viewModel)
         return arView
     }

@@ -8,15 +8,26 @@
 import SwiftUI
 
 struct NoteDisplayView: View {
-    @ObservedObject var viewModel = ViewModel()
+    @ObservedObject var viewModel: ViewModel
+    
+    @State private var showingAlert = false
     
     var body: some View {
         ZStack {
             ARViewContainer(viewModel: viewModel).edgesIgnoringSafeArea(.all)
+//            Text("TESTING TEXT")
+//            if let drawing = viewModel.message.drawing {
+//                Image(uiImage: drawing).resizable().frame(width: 200, height: 200)
+//            } else {
+//                Rectangle()
+//                    .fill(.red)
+//                    .frame(width: 200, height: 200)
+//            }
         }
     }
+    
 }
 
-#Preview {
-    NoteDisplayView()
-}
+//#Preview {
+//    NoteDisplayView()
+//}
