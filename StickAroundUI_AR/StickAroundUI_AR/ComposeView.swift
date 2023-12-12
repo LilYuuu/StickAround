@@ -23,8 +23,8 @@ struct ComposeView: View {
     
     @State private var isDrawingSaved = false
     
-    //    @State var listScrollingEnabled = true
-    
+    @ObservedObject private var keyboard = KeyboardResponder()
+        
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
@@ -36,7 +36,16 @@ struct ComposeView: View {
                     VStack {
                         // header
                         HStack {
-                            Button(action: { self.presentationMode.wrappedValue.dismiss()}) {
+                            Button(action: {
+                                self.presentationMode.wrappedValue.dismiss()
+                                
+                                // reset message
+                                viewModel.message = Message(sender: "", text: "", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
+                                
+                                // reset PK canvas
+                                pkCanvas.drawing = PKDrawing()
+                                
+                            }) {
                                 Text("Back")
                                     .foregroundStyle(Color.black)
                             }
@@ -46,53 +55,68 @@ struct ComposeView: View {
                                 .font(.title3)
                                 .frame(alignment: .center)
                             Spacer()
-                            //                            NavigationLink(destination: ScribbleView().navigationBarBackButtonHidden(true)) {
-                            //                                Text("Next").foregroundStyle(Color.black)
-                            //                            }
+                            Button(action: {
+                                pkCanvas.drawing = PKDrawing()
+                                viewModel.message.drawing = UIImage()
+                                print("Drawing cleared")
+                            }, label: {
+                                Text("Clear")
+                                    .foregroundStyle(Color.black)
+                            })
                         }
                         .padding()
                         .background(Color.white.opacity(0.75).ignoresSafeArea())
                         
                         // body
+                        Text("Draw here!").bold().foregroundStyle(Color.black).font(.body).padding(.top, 12)
                         
                         HStack {
                             Spacer()
                             ZStack {
                                 MessageView(message: $viewModel.message)
-                                    .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
+                                    .frame(width: geometry.size.width * 0.6, height: geometry.size.width * 0.6)
                                     .scaleEffect(geometry.size.width / 2048 / 1.5) // TODO: magic number?
-                                    .border(Color.red)
                                 CanvasView(pkCanvas: pkCanvas, toolPicker: toolPicker)
                                     .frame(width: geometry.size.width * 0.6, height: geometry.size.width * 0.6)
-                                    .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
                             }
+                            .onTapGesture {
+                                ShowToolPicker(toShow: true)
+                            }
+                            
                             
                             Spacer()
                         }
-                        //                        .frame(height: geometry.size.width)
                         .padding()
-                        //                        .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
                         
                         List {
-                            Section(/*header: Text("Write the note here").bold().foregroundStyle(Color.black).font(.body)*/) {
-                                TextField("Name", text: $viewModel.message.sender) {
-                                }
-                                TextField("Leave your message here", text: $viewModel.message.text) {
-                                }
+                            Section(header: Text("Type here!").bold().foregroundStyle(Color.black).font(.body).padding(.top, 12)) {
+                                TextField("Name", text: $viewModel.message.sender)
+                                TextField("Leave your message here", text: $viewModel.message.text, axis: .vertical)
                                 .frame(height: 60, alignment: .top)
                             }
                             .headerProminence(.increased)
+                            .onTapGesture {
+//                                if let toolPicker = toolPicker {
+//                                    toolPicker.setVisible(false, forFirstResponder: pkCanvas)
+//                                    toolPicker.removeObserver(pkCanvas)
+//                                    pkCanvas.resignFirstResponder()
+//                                }
+                                ShowToolPicker(toShow: false)
+                            }
+                            
                             
                             Section(header: Text("Where to stick the note?").bold().foregroundStyle(Color.black).font(.body)) {
-                                Picker("", selection: $locationSelection) {
+                                Picker("", selection: $viewModel.message.location) {
                                     ForEach(locations, id: \.self) {
                                         Text($0)
                                     }
                                 }
-                                //                                  .labelsHidden()
                                 .pickerStyle(.menu)
                             }
                             .headerProminence(.increased)
+                            .onTapGesture {
+                                ShowToolPicker(toShow: false)
+                            }
                             
                             Section() {
                                 HStack {
@@ -102,7 +126,9 @@ struct ComposeView: View {
                             }
                             .headerProminence(.increased)
                             .listRowBackground(Color.clear)
-                            //                            .listSectionSpacing(.compact)
+                            .onTapGesture {
+                                ShowToolPicker(toShow: false)
+                            }
                             
                             Section() {
                                 HStack {
@@ -113,6 +139,9 @@ struct ComposeView: View {
                             .headerProminence(.increased)
                             .listRowBackground(Color.clear)
                             .listSectionSpacing(.compact)
+                            .onTapGesture {
+                                ShowToolPicker(toShow: false)
+                            }
                             
                             Section() {
                                 HStack {
@@ -125,18 +154,9 @@ struct ComposeView: View {
                             .headerProminence(.increased)
                             .listRowBackground(Color.clear)
                             .listSectionSpacing(.compact)
-                            
-                            //                            HStack {
-                            //                                Spacer()
-                            //                                MessageView(message: $viewModel.message)
-                            //                                    .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
-                            //                                    .scaleEffect(geometry.size.width / 2048 / 1.5) // TODO: magic number?
-                            ////                                    .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
-                            //                                Spacer()
-                            //                            }
-                            ////                            .listRowBackground(Color.clear)
-                            ////                            .border(.blue)
-                            //                            .listRowSpacing(0)
+                            .onTapGesture {
+                                ShowToolPicker(toShow: false)
+                            }
                             
                             HStack {
                                 Spacer()
@@ -168,24 +188,20 @@ struct ComposeView: View {
                                     })
                                     NavigationLink(destination: NoteDisplayView(viewModel: viewModel), isActive: $isDrawingSaved) {EmptyView()}.hidden()
                                 }
-                                    
-                                
-                                Spacer()
-                                
                             }
                             .listRowBackground(Color.clear)
                             
-                            ZStack {
-                                if let drawing = viewModel.message.drawing {
-                                    Image(uiImage: drawing).scaledToFit()
-                                        .border(.blue)
-                                }
-                                
-                            }
-                            .frame(width: 240, height: 240)
-                            .onReceive(viewModel.$savedDrawing, perform: { _ in
-                                print("Drawing updated")
-                            })
+//                            ZStack {
+//                                if let drawing = viewModel.message.drawing {
+//                                    Image(uiImage: drawing).scaledToFit()
+//                                        .border(.blue)
+//                                }
+//                                
+//                            }
+//                            .frame(width: 240, height: 240)
+//                            .onReceive(viewModel.$savedDrawing, perform: { _ in
+//                                print("Drawing updated")
+//                            })
                             
                             ////            Spacer()
                             //            Image(uiImage: viewModel.savedDrawing)
@@ -196,43 +212,9 @@ struct ComposeView: View {
                         }
                         .background(.white.opacity(0.5))
                         .scrollContentBackground(.hidden)
-                        //                        .border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
-                        .disabled(!viewModel.listScrollingEnabled)
-                        .padding(.bottom, 64)
-                        
-                        Spacer()
-                        
-                        
-                        // footer
-                        //                        HStack {
-                        //                            Spacer()
-                        //
-                        //                            VStack {
-                        //                                Image("textIconFill")
-                        //                                Text("Text")
-                        //                                    .font(.footnote)
-                        //                                    .foregroundColor(Color("babyBlue"))
-                        //                                    .bold()
-                        //                            }
-                        //                            .padding()
-                        //
-                        //                            Spacer()
-                        //
-                        //                            NavigationLink(destination: ScribbleView().navigationBarBackButtonHidden(true)) {
-                        //                                VStack {
-                        //                                    Image("scribbleIconLine")
-                        //                                    Text("Scribble")
-                        //                                        .font(.footnote)
-                        //                                        .foregroundStyle(Color.black)
-                        //                                }
-                        //                                .padding()
-                        //                            }
-                        //
-                        //                            Spacer()
-                        //                        }
-                        //                        .padding(10)
-                        //                        .padding(.bottom, 0)
-                        //                        .background(Color.white.opacity(0.5).ignoresSafeArea())
+                        .padding(.bottom, keyboard.currentHeight)
+                        .edgesIgnoringSafeArea(.bottom)
+                        .animation(.easeOut(duration: 0.16))
                     }
                     
                 }
@@ -242,8 +224,53 @@ struct ComposeView: View {
         }
         
     }
+    
+    func ShowToolPicker(toShow: Bool) {
+        if let toolPicker = toolPicker {
+            toolPicker.setVisible(toShow, forFirstResponder: pkCanvas)
+            if toShow {
+                toolPicker.addObserver(pkCanvas)
+                pkCanvas.becomeFirstResponder()
+            } else {
+                toolPicker.removeObserver(pkCanvas)
+                pkCanvas.resignFirstResponder()
+            }
+            
+        }
+    }
 }
 
+final class KeyboardResponder: ObservableObject {
+    private var notificationCenter: NotificationCenter
+    @Published private(set) var currentHeight: CGFloat = 0
+
+    init(center: NotificationCenter = .default) {
+        notificationCenter = center
+        notificationCenter.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyBoardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    deinit {
+        notificationCenter.removeObserver(self)
+    }
+
+    @objc func keyBoardWillShow(notification: Notification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            currentHeight = keyboardSize.height
+        }
+    }
+
+    @objc func keyBoardWillHide(notification: Notification) {
+        currentHeight = 0
+    }
+}
+
+extension View {
+  func endTextEditing() {
+    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
+                                    to: nil, from: nil, for: nil)
+  }
+}
 
 #Preview {
     ComposeView(viewModel:ViewModel())

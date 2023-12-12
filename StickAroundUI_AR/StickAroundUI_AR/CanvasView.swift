@@ -23,7 +23,7 @@ struct CanvasView: UIViewRepresentable {
         
 //        pkCanvas.contentSize = CGSize(width: 100, height: 100)
         
-        toolPicker?.setVisible(true, forFirstResponder: pkCanvas)
+        toolPicker?.setVisible(false, forFirstResponder: pkCanvas)
         toolPicker?.addObserver(pkCanvas)
         pkCanvas.becomeFirstResponder()
         
