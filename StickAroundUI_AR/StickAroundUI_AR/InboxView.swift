@@ -12,7 +12,7 @@ struct InboxView: View {
     
     @StateObject var viewModel: ViewModel
     
-    let testMsg = Message(sender: "El", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sodales posuere augue mollis posuere. Curabitur lectus massa, suscipit vitae malesuada in, ultrices quis nulla.", location: "Ceiling", time: "2023-10-25 15:22:42", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
+    let testMsg = Message(sender: "El", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sodales posuere augue mollis posuere. Curabitur lectus massa, suscipit vitae malesuada in, ultrices quis nulla.", location: "Wall", time: "2023-10-25 15:22:42", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
 
     var body: some View {
         NavigationView {
@@ -20,38 +20,47 @@ struct InboxView: View {
                 Color("lightYellow")
                     .ignoresSafeArea()
                 VStack {
-                    HStack {
-                        Button(action: { self.presentationMode.wrappedValue.dismiss()}) {
-                                Text("Home")
-                                .foregroundStyle(Color.black)
-                            }
-                        Spacer()
-                        Text("Inbox")
-                            .bold()
-                            .font(.title3)
-                            .frame(alignment: .center)
-                            
-                        Spacer()
-                        NavigationLink(destination: NoteDisplayView(viewModel: viewModel)) {
-                            Text("Display All")
-                                .foregroundStyle(Color.black)
+                    ZStack {
+                        HStack {
+                            Text("Inbox")
+                                .bold()
+                                .font(.title3)
+                                .frame(maxWidth: .infinity, alignment: .center)
                         }
+                        .padding()
+                        .background(Color.white.opacity(0.75).ignoresSafeArea())
+                        HStack {
+                            Button(action: { self.presentationMode.wrappedValue.dismiss()}) {
+                                    Text("Home")
+                                    .foregroundStyle(Color.black)
+                                }
+                            
+                            Spacer()
+                            
+                            NavigationLink(destination: NoteDisplayView(viewModel: viewModel, message: viewModel.message).navigationBarBackButtonHidden(true)) {
+                                Text("Display All")
+                                    .foregroundStyle(Color.black)
+                            }
+                        }
+                        .padding()
+                        
                     }
-                    .padding()
-                    .background(Color.white.opacity(0.75).ignoresSafeArea())
+                    
+                    
 
                     List {
-                        Section(header: Text("Unread").bold().foregroundStyle(Color.black).font(.subheadline)) {
+                        Section(header: Text("Unread").bold().foregroundStyle(Color.black).font(.body)) {
                             UnreadMessageItem(message: testMsg)
                         }.headerProminence(.increased)
-                            .listRowBackground(Color("lightBlueButtonBG").opacity(0.4))
+                            .listRowBackground(Color("accentYellow"))
                         
                         
-                        Section(header: Text("All").bold().foregroundStyle(Color.black).font(.subheadline)) {
-                                MessageItem(message: testMsg)
-                                MessageItem(message: testMsg)
-                                MessageItem(message: testMsg)
+                        Section(header: Text("All").bold().foregroundStyle(Color.black).font(.body)) {
+                            MessageItem(message: testMsg, viewModel: viewModel)
+                            MessageItem(message: testMsg, viewModel: viewModel)
+                            MessageItem(message: testMsg, viewModel: viewModel)
                         }.headerProminence(.increased)
+                            .listRowBackground(Color.white.opacity(0.7))
 //                        Section {
 //                            MessageItem(timeStamp: "Time", location: "Location", message: "Message")
 //                        }
@@ -74,26 +83,37 @@ struct MessageItem: View {
 //    let location: String
 //    let message: String
     let message: Message
+    let viewModel: ViewModel
     
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(message.time)
-                    .font(.caption)
-                    .foregroundStyle(Color.gray)
-                Spacer()
-                Text(message.location)
-                    .font(.caption)
-                    .foregroundStyle(Color.gray)
+//        NavigationLink(destination: NoteDisplayView(viewModel: viewModel, message: message)) {
+//        NavigationView {
+            ZStack {
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text(message.time)
+                            .font(.footnote)
+                            .foregroundStyle(Color.gray)
+                        Spacer()
+                        Text(message.location)
+                            .font(.footnote)
+                            .foregroundStyle(Color.gray)
+                    }
+                    
+                    Spacer()
+                    Text(message.sender)
+                        .bold()
+                    Text(message.text)
+                        .padding(.top, 5)
+                        .padding(.bottom, 5)
+                }.padding()
+                
+                NavigationLink(destination: NoteDisplayView(viewModel: viewModel, message: message)) {EmptyView()}.opacity(0)
             }
+//        }
+        
             
-            Spacer()
-            Text(message.sender)
-                .bold()
-            Text(message.text)
-                .padding(.top, 5)
-                .padding(.bottom, 5)
-        }.padding()
+//        }
     }
 }
 
@@ -104,13 +124,14 @@ struct UnreadMessageItem: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(message.time)
-                    .font(.caption)
+                    .font(.footnote)
 //                    .foregroundStyle(Color.gray)
                 Spacer()
             }
             
             Spacer()
             Text("**\(message.sender)** sticked a new note on your **\(message.location)**")
+            
 //            Text(message.text)
                 .padding(.top, 5)
                 .padding(.bottom, 5)

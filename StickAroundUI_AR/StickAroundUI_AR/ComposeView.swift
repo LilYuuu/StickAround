@@ -35,37 +35,43 @@ struct ComposeView: View {
                     
                     VStack {
                         // header
-                        HStack {
-                            Button(action: {
-                                self.presentationMode.wrappedValue.dismiss()
-                                
-                                // reset message
-                                viewModel.message = Message(sender: "", text: "", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
-                                
-                                // reset PK canvas
-                                pkCanvas.drawing = PKDrawing()
-                                
-                            }) {
-                                Text("Back")
-                                    .foregroundStyle(Color.black)
+                        ZStack {
+                            HStack {
+                                Text("Composing...")
+                                    .bold()
+                                    .font(.title3)
+                                    .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .center)
                             }
-                            Spacer()
-                            Text("Composing...")
-                                .bold()
-                                .font(.title3)
-                                .frame(alignment: .center)
-                            Spacer()
-                            Button(action: {
-                                pkCanvas.drawing = PKDrawing()
-                                viewModel.message.drawing = UIImage()
-                                print("Drawing cleared")
-                            }, label: {
-                                Text("Clear")
-                                    .foregroundStyle(Color.black)
-                            })
+                            .padding()
+                            .background(Color.white.opacity(0.75).ignoresSafeArea())
+                            
+                            HStack {
+                                Button(action: {
+                                    self.presentationMode.wrappedValue.dismiss()
+                                    
+                                    // reset message
+                                    viewModel.message = Message(sender: "", text: "", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
+                                    
+                                    // reset PK canvas
+                                    pkCanvas.drawing = PKDrawing()
+                                    
+                                }) {
+                                    Text("Back")
+                                        .foregroundStyle(Color.black)
+                                }
+                                Spacer()
+                                Button(action: {
+                                    pkCanvas.drawing = PKDrawing()
+                                    viewModel.message.drawing = UIImage()
+                                    print("Drawing cleared")
+                                }, label: {
+                                    Text("Clear")
+                                        .foregroundStyle(Color.black)
+                                })
+                            }
+                            .padding()
                         }
-                        .padding()
-                        .background(Color.white.opacity(0.75).ignoresSafeArea())
+                        
                         
                         // body
                         Text("Draw here!").bold().foregroundStyle(Color.black).font(.body).padding(.top, 12)
@@ -181,7 +187,7 @@ struct ComposeView: View {
                                             .background(Color("lightBlueButtonBG").opacity(0.6))
                                             .cornerRadius(32)
                                     })
-                                    NavigationLink(destination: NoteDisplayView(viewModel: viewModel), isActive: $isDrawingSaved) {EmptyView()}.hidden()
+                                    NavigationLink(destination: NoteDisplayView(viewModel: viewModel, message: viewModel.message), isActive: $isDrawingSaved) {EmptyView()}.hidden()
                                 }
                             }
                             .listRowBackground(Color.clear)

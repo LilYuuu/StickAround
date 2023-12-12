@@ -15,10 +15,11 @@ import Combine
 
 struct ARViewContainer: UIViewRepresentable {
     let viewModel: ViewModel
+    let message: Message
     
     func makeUIView(context: Context) -> ARView {
         print("AR view initialized")
-        let arView = SimpleARView(frame: .zero, viewModel: viewModel)
+        let arView = SimpleARView(frame: .zero, viewModel: viewModel, message: message)
         return arView
     }
     
@@ -28,6 +29,7 @@ struct ARViewContainer: UIViewRepresentable {
 class SimpleARView: ARView {
     let viewModel: ViewModel
     private var subscriptions = Set<AnyCancellable>()
+    private var message: Message
     
 //    var planeAnchor: AnchorEntity?
     var messagePlaneEntity: MessagePlaneEntity?
@@ -38,8 +40,9 @@ class SimpleARView: ARView {
     // to save the tapped plane entity
     var tappedPlane: MessagePlaneEntity?
     
-    init(frame: CGRect, viewModel: ViewModel) {
+    init(frame: CGRect, viewModel: ViewModel, message: Message) {
         self.viewModel = viewModel
+        self.message = message
         super.init(frame: frame)
     }
     
@@ -234,8 +237,10 @@ extension SimpleARView: ARSessionDelegate {
                 print(planeClassification.classficationString)
                 
                 // Create a message plane entity based on the plane anchor
+//                self.messagePlaneEntity =
+//                MessagePlaneEntity(message: viewModel.message, planeAnchor: $0)
                 self.messagePlaneEntity =
-                MessagePlaneEntity(message: viewModel.message, planeAnchor: $0)
+                MessagePlaneEntity(message: message, planeAnchor: $0)
                 
                 // Hide the message entity when generated
                 self.messagePlaneEntity?.messageEntity.setScale([0, 0, 0], relativeTo: nil)
