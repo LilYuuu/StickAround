@@ -96,11 +96,6 @@ struct ComposeView: View {
                             }
                             .headerProminence(.increased)
                             .onTapGesture {
-//                                if let toolPicker = toolPicker {
-//                                    toolPicker.setVisible(false, forFirstResponder: pkCanvas)
-//                                    toolPicker.removeObserver(pkCanvas)
-//                                    pkCanvas.resignFirstResponder()
-//                                }
                                 ShowToolPicker(toShow: false)
                             }
                             
