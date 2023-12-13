@@ -11,13 +11,12 @@ struct NoteDisplayView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
 
     @ObservedObject var viewModel: ViewModel
-    var message: Message
     
     @State private var showingAlert = false
     
     var body: some View {
         ZStack {
-            ARViewContainer(viewModel: viewModel, message: message).edgesIgnoringSafeArea(.all)
+            ARViewContainer(viewModel: viewModel).edgesIgnoringSafeArea(.all)
                 .onAppear{
                     showingAlert = true
                 }
@@ -68,5 +67,5 @@ struct NoteDisplayView: View {
 }
 
 #Preview {
-    NoteDisplayView(viewModel: ViewModel(), message: Message(sender: "", text: "", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200))
+    NoteDisplayView(viewModel: ViewModel())
 }

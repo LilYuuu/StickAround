@@ -39,7 +39,7 @@ struct InboxView: View {
                             
                             Spacer()
                             
-                            NavigationLink(destination: NoteDisplayView(viewModel: viewModel, message: viewModel.message).navigationBarBackButtonHidden(true)) {
+                            NavigationLink(destination: NoteDisplayView(viewModel: viewModel).navigationBarBackButtonHidden(true)) {
                                 Text("Display All")
                                     .foregroundStyle(Color.black)
                             }
@@ -127,7 +127,21 @@ struct MessageItem: View {
                         .padding(.bottom, 5)
                 }.padding()
                 
-                NavigationLink(destination: NoteDisplayView(viewModel: viewModel, message: message)) {EmptyView()}.opacity(0)
+                Button(action: {
+                    viewModel.message = message
+                    print(viewModel.message)
+                }, label: { Text("") })
+                .background(
+                    NavigationLink(
+                        destination: NoteDisplayView(viewModel: viewModel),
+                        label: { EmptyView() }
+                    ).opacity(0)
+                )
+                
+//                NavigationLink(destination: NoteDisplayView(viewModel: viewModel)) {EmptyView()}.opacity(0)
+//                    .onTapGesture {
+//                        viewModel.message = message
+//                }
             }
 //        }
         
@@ -158,7 +172,22 @@ struct UnreadMessageItem: View {
                     .padding(.bottom, 5)
             }.padding()
             
-            NavigationLink(destination: NoteDisplayView(viewModel: viewModel, message: message)) {EmptyView()}.opacity(0)
+            Button(action: {
+                viewModel.message = message
+                print(viewModel.message)
+            }, label: { Text("") })
+            .background(
+                NavigationLink(
+                    destination: NoteDisplayView(viewModel: viewModel),
+                    label: { EmptyView() }
+                ).opacity(0)
+            )
+            
+//            NavigationLink(destination: NoteDisplayView(viewModel: viewModel)) {EmptyView()}.opacity(0)
+//                .onTapGesture {
+//                    viewModel.message = message
+//                    print(viewModel.message)
+//                }
         }
         
     }

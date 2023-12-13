@@ -209,7 +209,7 @@ struct ComposeView: View {
                                             .background(Color("lightBlueButtonBG").opacity(0.6))
                                             .cornerRadius(32)
                                     })
-                                    NavigationLink(destination: NoteDisplayView(viewModel: viewModel, message: viewModel.message), isActive: $isDrawingSaved) {EmptyView()}.hidden()
+                                    NavigationLink(destination: NoteDisplayView(viewModel: viewModel), isActive: $isDrawingSaved) {EmptyView()}.hidden()
                                 }
                             }
                             .listRowBackground(Color.clear)
