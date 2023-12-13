@@ -60,7 +60,7 @@ struct MessageView: View {
 
 }
 
-struct Message {
+struct Message: Equatable, Hashable {
     var sender: String
     var text: String  // TODO: test with longer text
     var location: String
