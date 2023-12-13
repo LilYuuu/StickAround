@@ -32,6 +32,9 @@ struct ComposeView: View {
                     // bg
                     Color("lightYellow")
                         .ignoresSafeArea()
+                        .onTapGesture {
+                            ShowToolPicker(toShow: false)
+                        }
                     
                     VStack {
                         // header
@@ -127,9 +130,9 @@ struct ComposeView: View {
                             }
                             .headerProminence(.increased)
                             .listRowBackground(Color.clear)
-                            .onTapGesture {
-                                ShowToolPicker(toShow: false)
-                            }
+//                            .onTapGesture {
+//                                ShowToolPicker(toShow: false)
+//                            }
                             
                             Section() {
                                 HStack {
@@ -140,9 +143,9 @@ struct ComposeView: View {
                             .headerProminence(.increased)
                             .listRowBackground(Color.clear)
                             .listSectionSpacing(.compact)
-                            .onTapGesture {
-                                ShowToolPicker(toShow: false)
-                            }
+//                            .onTapGesture {
+//                                ShowToolPicker(toShow: false)
+//                            }
                             
                             Section() {
                                 HStack {
@@ -180,6 +183,25 @@ struct ComposeView: View {
                                         print("saved drawing in message: \(viewModel.message.drawing)")
                                         
                                         isDrawingSaved = true
+                                        
+                                        pkCanvas.drawing = PKDrawing()
+                                        
+                                        // save current system time
+                                        let now = Date()
+                                        let formatter = DateFormatter()
+                                        formatter.timeZone = TimeZone.current
+                                        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                        let dateString = formatter.string(from: now)
+                                        
+                                        viewModel.message.time = dateString
+                                        
+//                                        print(dateString)
+                                        
+                                        // push new msg to array
+                                        let newMessage = Message(sender: viewModel.message.sender, text: viewModel.message.text, location: viewModel.message.location, time: dateString, backgroundColor: viewModel.message.backgroundColor, fontColor: viewModel.message.fontColor, fontSize: viewModel.message.fontSize, drawing: image)
+                                        
+                                        viewModel.messages.append(newMessage)
+//                                        print(viewModel.messages)
                                     }, label: {
                                         Image("stickIt")
                                             .padding()
