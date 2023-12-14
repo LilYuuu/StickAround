@@ -24,7 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		EE0FB3AB2B22223A00241EC8 /* StickAroundUI_AR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StickAroundUI_AR.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE0FB3AB2B22223A00241EC8 /* StickAround.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StickAround.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE0FB3AE2B22223A00241EC8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EE0FB3B02B22223A00241EC8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		EE0FB3B22B22223B00241EC8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -63,7 +63,7 @@
 		EE0FB3AC2B22223A00241EC8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EE0FB3AB2B22223A00241EC8 /* StickAroundUI_AR.app */,
+				EE0FB3AB2B22223A00241EC8 /* StickAround.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,9 +100,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EE0FB3AA2B22223A00241EC8 /* StickAroundUI_AR */ = {
+		EE0FB3AA2B22223A00241EC8 /* StickAround */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EE0FB3B92B22223B00241EC8 /* Build configuration list for PBXNativeTarget "StickAroundUI_AR" */;
+			buildConfigurationList = EE0FB3B92B22223B00241EC8 /* Build configuration list for PBXNativeTarget "StickAround" */;
 			buildPhases = (
 				EE0FB3A72B22223A00241EC8 /* Sources */,
 				EE0FB3A82B22223A00241EC8 /* Frameworks */,
@@ -112,11 +112,11 @@
 			);
 			dependencies = (
 			);
-			name = StickAroundUI_AR;
+			name = StickAround;
 			packageProductDependencies = (
 			);
 			productName = StickAroundUI_AR;
-			productReference = EE0FB3AB2B22223A00241EC8 /* StickAroundUI_AR.app */;
+			productReference = EE0FB3AB2B22223A00241EC8 /* StickAround.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -150,7 +150,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EE0FB3AA2B22223A00241EC8 /* StickAroundUI_AR */,
+				EE0FB3AA2B22223A00241EC8 /* StickAround */,
 			);
 		};
 /* End PBXProject section */
@@ -383,7 +383,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EE0FB3B92B22223B00241EC8 /* Build configuration list for PBXNativeTarget "StickAroundUI_AR" */ = {
+		EE0FB3B92B22223B00241EC8 /* Build configuration list for PBXNativeTarget "StickAround" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EE0FB3BA2B22223B00241EC8 /* Debug */,
