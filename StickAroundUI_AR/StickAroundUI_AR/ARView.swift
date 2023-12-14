@@ -29,8 +29,11 @@ class SimpleARView: ARView {
     let viewModel: ViewModel
     private var subscriptions = Set<AnyCancellable>()
     
-//    var planeAnchor: AnchorEntity?
+    //    var planeAnchor: AnchorEntity?
     var messagePlaneEntity: MessagePlaneEntity?
+    
+    // to store all plane entities
+    var messagePlaneEntities: [MessagePlaneEntity]?
     
     // Dictionary for storing ARPlaneAnchor(s) with AnchorEntity(s)
     var anchorEntityMap: [ARPlaneAnchor: AnchorEntity] = [:]
@@ -57,7 +60,7 @@ class SimpleARView: ARView {
         UIApplication.shared.isIdleTimerDisabled = true
         
         self.setupARSession()
-//        self.setupScene()
+        //        self.setupScene()
         self.setupSubscriptions()
         self.setupTapGesture()
     }
@@ -74,31 +77,31 @@ class SimpleARView: ARView {
     }
     
     private func setupScene() {
-//        let planeAnchor = AnchorEntity(plane: .vertical)
-//        scene.addAnchor(planeAnchor)
+        //        let planeAnchor = AnchorEntity(plane: .vertical)
+        //        scene.addAnchor(planeAnchor)
         
-//        let messagePlaneEntity = MessagePlaneEntity(message: viewModel.message, planeAnchor: <#ARPlaneAnchor#>)
-//        planeAnchor.addChild(messagePlaneEntity)
-//        self.messagePlaneEntity = messagePlaneEntity
+        //        let messagePlaneEntity = MessagePlaneEntity(message: viewModel.message, planeAnchor: <#ARPlaneAnchor#>)
+        //        planeAnchor.addChild(messagePlaneEntity)
+        //        self.messagePlaneEntity = messagePlaneEntity
         
     }
     
     private func resetScene() {
-//        messagePlaneEntity?.removeFromParent()
-//        messagePlaneEntity = nil
+        //        messagePlaneEntity?.removeFromParent()
+        //        messagePlaneEntity = nil
         
-//        planeAnchor?.removeFromParent()
-//        planeAnchor = nil
+        //        planeAnchor?.removeFromParent()
+        //        planeAnchor = nil
         
         // TODO: clear the anchor entity array
         
         for (_, anchorEntity) in anchorEntityMap {
             // Remove all child entities of the anchor entity
             anchorEntity.children.removeAll()
-
+            
             // Remove the anchor entity itself from the scene
             anchorEntity.removeFromParent()
-
+            
             // Remove the ARPlaneAnchor
             if let planeAnchor = anchorEntity.anchor as? ARPlaneAnchor {
                 // Remove the anchor from the session
@@ -111,7 +114,7 @@ class SimpleARView: ARView {
         
         setupARSession()
         
-//        setupScene()
+        //        setupScene()
     }
     
     private func setupSubscriptions() {
@@ -155,13 +158,14 @@ class SimpleARView: ARView {
     
     @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
         let location = gesture.location(in: self)
-
+        
         print("Tapped at location: \(location)")
         
         // Perform hit test to check if the tap intersects with any entities in the scene
         if let tappedEntity = self.entity(at: location) {
             print("Tapped entity: \(tappedEntity)")
             print("Tapped parent: \(tappedEntity.parent)")
+            
             
             if let messagePlaneEntity = tappedEntity.parent as? MessagePlaneEntity {
                 // Check if the tapped entity is different from the currently selected one
@@ -172,27 +176,38 @@ class SimpleARView: ARView {
                     
                     print("Set tapped plane scale to [1, 1, 1]")
                     
-                    // Update the size of the tapped entity
-                    messagePlaneEntity.messageEntity.setScale([1, 1, 1], relativeTo: nil)
-                    messagePlaneEntity.modelEntity.setScale([0, 0, 0], relativeTo: nil)
-                    
-                    // Reset the size of all the other entities
-                    self.anchorEntityMap.values.forEach { anchorEntity in
-                        // let messageEntity = anchorEntity.findEntity(named: "message-plane") as? MessagePlaneEntity
-                        let messageEntities: [MessagePlaneEntity] = anchorEntity.children.compactMap { entity in
-                            return entity as? MessagePlaneEntity
-                        }
+                    if (!viewModel.useGridView) {
                         
-                        messageEntities.forEach { entity in
-                            if (entity != tappedPlane) {
-                                entity.messageEntity.setScale([0, 0, 0], relativeTo: nil)
-                                entity.modelEntity.setScale([0, 0, 0], relativeTo: nil)
+                        // Update the size of the tapped entity
+                        messagePlaneEntity.messageEntity.setScale([1, 1, 1], relativeTo: nil)
+                        messagePlaneEntity.modelEntity.setScale([0, 0, 0], relativeTo: nil)
+                        
+                        // Reset the size of all the other entities
+                        self.anchorEntityMap.values.forEach { anchorEntity in
+                            // let messageEntity = anchorEntity.findEntity(named: "message-plane") as? MessagePlaneEntity
+                            let messageEntities: [MessagePlaneEntity] = anchorEntity.children.compactMap { entity in
+                                return entity as? MessagePlaneEntity
                             }
                             
+                            messageEntities.forEach { entity in
+                                if (entity != tappedPlane) {
+                                    entity.messageEntity.setScale([0, 0, 0], relativeTo: nil)
+                                    entity.modelEntity.setScale([0, 0, 0], relativeTo: nil)
+                                }
+                                
+                            }
                         }
+                    } else {
+                        print("Tapped anchor entity: \(messagePlaneEntity.parent)")
+                        print("All child msg planes: \(messagePlaneEntity.parent?.children)")
+                        //                        messagePlaneEntity.parent?.children.forEach { childmessagePlaneEntity in
+                        //                            childmessagePlaneEntity.messageEntity
+                        //                            
                     }
+                    
                 }
             }
+            
         }
     }
 }
@@ -204,57 +219,82 @@ extension SimpleARView: ARSessionDelegate {
         // Filter added anchors for plane anchors
         let planeAnchors = anchors.compactMap { $0 as? ARPlaneAnchor }
         
-        planeAnchors.forEach {
+        planeAnchors.forEach { planeAnchor in
             // Create a RealityKit anchor at plane anchor's position
             let anchorEntity = AnchorEntity()
             
             /* --------- Plane Visualization Stuff --------- */
             
             // Estimated size of detected plane
-//            let extent = $0.planeExtent
+            //            let extent = $0.planeExtent
             
             // Generate a rough plane mesh based on anchor extent
             // Later we will update this plane based on more detailed geometry as ARKit learns more about our environment
-//            let planeMesh: MeshResource = .generatePlane(width: extent.width,
-//                                                         depth: extent.height)
+            //            let planeMesh: MeshResource = .generatePlane(width: extent.width,
+            //                                                         depth: extent.height)
             
             // Set color based on plane classification using our extension defined at bottom of this file
-            let planeClassification = $0.classification
+            let planeClassification = planeAnchor.classification
             
-//            let modelEntity = ModelEntity(mesh: planeMesh,
-//                                          materials: [planeClassification.debugMaterial])
+            //            let modelEntity = ModelEntity(mesh: planeMesh,
+            //                                          materials: [planeClassification.debugMaterial])
             
             // Add plane model entity to anchor entity
-//            anchorEntity.addChild(modelEntity)
+            //            anchorEntity.addChild(modelEntity)
             
             /* -------------------------------------------- */
             
-            // if the plane classification matches with the location the msg was attached to
-            if (planeClassification.classficationString == viewModel.message.location) {
-                print(planeClassification.classficationString)
+            
+//            if (!viewModel.useGridView) {
+                // Single Message
                 
-                // Create a message plane entity based on the plane anchor
-//                self.messagePlaneEntity =
-//                MessagePlaneEntity(message: viewModel.message, planeAnchor: $0)
-                self.messagePlaneEntity =
-                MessagePlaneEntity(message: viewModel.message, planeAnchor: $0)
-                
-                // Hide the message entity when generated
-                self.messagePlaneEntity?.messageEntity.setScale([0, 0, 0], relativeTo: nil)
-                
-                // Add message plane entity to anchor entity
-                anchorEntity.addChild(self.messagePlaneEntity!)
-                
-                // Assign AR plane anchor's transform to our anchor Entity
-                anchorEntity.transform.matrix = $0.transform
-                
-                // Add anchor entity to our scene
-                self.scene.addAnchor(anchorEntity)
-                
-                // Store ARKit's ARPlaneAnchor along with our associated RealityKit Anchor Entity
-                self.anchorEntityMap[$0] = anchorEntity
-                
-            }
+                // if the plane classification matches with the location the msg was attached to
+                if (planeClassification.classficationString == viewModel.message.location) {
+                    print(planeClassification.classficationString)
+                    
+                    // Create a message plane entity based on the plane anchor
+                    //                self.messagePlaneEntity =
+                    //                MessagePlaneEntity(message: viewModel.message, planeAnchor: $0)
+                    self.messagePlaneEntity =
+                    MessagePlaneEntity(message: viewModel.message, planeAnchor: planeAnchor)
+                    
+                    if (planeClassification.classficationString == "Ceiling") {
+                        self.messagePlaneEntity?.messageEntity.transform.rotation =
+                        simd_quatf(angle: Float.pi, axis: SIMD3(x: 0, y: 1, z: 0))
+                                                print("rotate by PI")
+                    }
+                    
+                    // Hide the message entity when generated
+                    self.messagePlaneEntity?.messageEntity.setScale([0, 0, 0], relativeTo: nil)
+                    
+                    // Add message plane entity to anchor entity
+                    anchorEntity.addChild(self.messagePlaneEntity!)
+                    
+                    // Assign AR plane anchor's transform to our anchor Entity
+                    anchorEntity.transform.matrix = planeAnchor.transform
+                    
+                    // Add anchor entity to our scene
+                    self.scene.addAnchor(anchorEntity)
+                    
+                    // Store ARKit's ARPlaneAnchor along with our associated RealityKit Anchor Entity
+                    self.anchorEntityMap[planeAnchor] = anchorEntity
+                }
+//            } else {
+////                 Multi messages
+//
+//                viewModel.messages.forEach { message in
+//                    // create a MessagePlaneEntity for each msg in the array
+//                    let newMessagePlaneEntity = MessagePlaneEntity(message: message, planeAnchor: planeAnchor)
+//                    newMessagePlaneEntity.messageEntity.setScale([0, 0, 0], relativeTo: nil)
+//                    anchorEntity.addChild(newMessagePlaneEntity)
+//                }
+//                
+//                anchorEntity.transform.matrix = planeAnchor.transform
+//                self.scene.addAnchor(anchorEntity)
+//                self.anchorEntityMap[planeAnchor] = anchorEntity
+//            }
+            
+            
         }
     }
     
@@ -278,8 +318,8 @@ extension SimpleARView: ARSessionDelegate {
                 .children
                 .compactMap { $0 as? MessagePlaneEntity }
                 .first) else {
-                    return
-                }
+                return
+            }
             
             // Get detailed plane geometry
             var meshDescriptor = MeshDescriptor(name: "plane")
@@ -299,30 +339,30 @@ extension SimpleARView: ARSessionDelegate {
                 messagePlaneEntity.messageEntity.position = bounds.center
                 messagePlaneEntity.messageEntity.position.y = center.y + 0.001
             }
-//
+            //
             // Get detailed plane geometry
-//            var meshDescriptor = MeshDescriptor(name: "plane")
-//            meshDescriptor.positions = MeshBuffers.Positions(planeAnchor.geometry.vertices)
-//            meshDescriptor.primitives = .triangles(planeAnchor.geometry.triangleIndices.map { UInt32($0)})
-//
-//            DispatchQueue.main.async {
-                // Try creating mesh from detailed ARPlaneGeometry
-//                if let mesh = try? MeshResource.generate(from: [meshDescriptor]) {
-//                    modelEntity?.model?.mesh = mesh
-//                }
-//
-//                let planeClassification = planeAnchor.classification
-//                modelEntity?.model?.materials = [planeClassification.debugMaterial]
-//            }
+            //            var meshDescriptor = MeshDescriptor(name: "plane")
+            //            meshDescriptor.positions = MeshBuffers.Positions(planeAnchor.geometry.vertices)
+            //            meshDescriptor.primitives = .triangles(planeAnchor.geometry.triangleIndices.map { UInt32($0)})
+            //
+            //            DispatchQueue.main.async {
+            // Try creating mesh from detailed ARPlaneGeometry
+            //                if let mesh = try? MeshResource.generate(from: [meshDescriptor]) {
+            //                    modelEntity?.model?.mesh = mesh
+            //                }
+            //
+            //                let planeClassification = planeAnchor.classification
+            //                modelEntity?.model?.materials = [planeClassification.debugMaterial]
+            //            }
             
             /* -------------------------------------------- */
             
             
             // Update message plane entity's transform
-//            messagePlaneEntity?.transform = Transform(matrix: planeAnchor.transform)
+            //            messagePlaneEntity?.transform = Transform(matrix: planeAnchor.transform)
             
-//            print(messagePlaneEntity)
-                        
+            //            print(messagePlaneEntity)
+            
             
         }
     }

@@ -14,7 +14,7 @@ struct InboxView: View {
     
     @State var newMessage: Message?
     
-    let testMsg = Message(sender: "El", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sodales posuere augue mollis posuere. Curabitur lectus massa, suscipit vitae malesuada in, ultrices quis nulla.", location: "Wall", time: "2023-10-25 15:22:42", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
+    let testMsg = Message(sender: "El", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sodales posuere augue mollis posuere. Curabitur lectus massa, suscipit vitae malesuada in, ultrices quis nulla.", room: "Bedroom", location: "Wall", time: "2023-10-25 15:22:42", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
 
     var body: some View {
         NavigationView {
@@ -39,10 +39,30 @@ struct InboxView: View {
                             
                             Spacer()
                             
-                            NavigationLink(destination: NoteDisplayView(viewModel: viewModel).navigationBarBackButtonHidden(true)) {
-                                Text("Display All")
-                                    .foregroundStyle(Color.black)
+                            ZStack {
+                                NavigationLink(
+                                    destination: NoteDisplayView(viewModel: viewModel).navigationBarBackButtonHidden(true),
+                                    label: {
+                                        Text("Display All")
+                                        .foregroundStyle(Color.black)}
+                                )
+                            }.onTapGesture {
+//                                viewModel.useGridView = true
+//                                print(viewModel.useGridView)
                             }
+                            
+//                            Button(action: {
+//                                viewModel.useGridView = true
+//                                print(viewModel.useGridView)
+//                            }, label: { Text("Display All").foregroundStyle(Color.black) })
+//                            .background(
+//                                NavigationLink(
+//                                    destination: NoteDisplayView(viewModel: viewModel).navigationBarBackButtonHidden(true),
+//                                    label: {
+//                                        Text("Display All")
+//                                        .foregroundStyle(Color.black)}
+//                                )
+//                            )
                         }
                         .padding()
                         
@@ -114,7 +134,7 @@ struct MessageItem: View {
                             .font(.footnote)
                             .foregroundStyle(Color.gray)
                         Spacer()
-                        Text(message.location)
+                        Text("\(message.room) \(message.location)")
                             .font(.footnote)
                             .foregroundStyle(Color.gray)
                     }
@@ -165,7 +185,7 @@ struct UnreadMessageItem: View {
                 }
                 
                 Spacer()
-                Text("**\(message.sender)** sticked a new note on your **\(message.location)**")
+                Text("**\(message.sender)** sticked a new note on your **\(message.room)** **\(message.location)**")
                 
     //            Text(message.text)
                     .padding(.top, 5)
@@ -174,7 +194,7 @@ struct UnreadMessageItem: View {
             
             Button(action: {
                 viewModel.message = message
-                print(viewModel.message)
+//                print(viewModel.message)
             }, label: { Text("") })
             .background(
                 NavigationLink(

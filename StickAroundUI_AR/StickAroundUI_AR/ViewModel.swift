@@ -14,9 +14,11 @@ import PencilKit
 class ViewModel: ObservableObject {
 
 //    @Published var message: Message = Message(sender: "El", text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sodales posuere augue mollis posuere. Curabitur lectus massa, suscipit vitae malesuada in, ultrices quis nulla.", location: "Wall", time: "2023-10-25 15:22:42",  backgroundColor: .yellow, fontColor: .white, fontSize: 200)
-    @Published var message: Message = Message(sender: "", text: "", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
+    @Published var message: Message = Message(sender: "", text: "", room: "Bedroom", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
     
     @Published var messages: [Message] = []
+    
+    @Published var useGridView: Bool = false
     
     
     // Single pass through subject ("signal") for resetting the view.

@@ -15,8 +15,7 @@ struct ComposeView: View {
     @ObservedObject var viewModel: ViewModel
     
     let locations = ["Wall", "Window", "Ceiling", "Table", "Floor"]
-    @State private var locationSelection = "Wall"
-    
+    let rooms = ["Bedroom", "Kitchen", "Living Room", "Bathroom", "Dining Room"]
     
     @State var pkCanvas = PKCanvasView()
     @State var toolPicker: PKToolPicker? = PKToolPicker()
@@ -53,7 +52,7 @@ struct ComposeView: View {
                                     self.presentationMode.wrappedValue.dismiss()
                                     
                                     // reset message
-                                    viewModel.message = Message(sender: "", text: "", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
+                                    viewModel.message = Message(sender: "", text: "", room: "Bedroom", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
                                     
                                     // reset PK canvas
                                     pkCanvas.drawing = PKDrawing()
@@ -110,6 +109,12 @@ struct ComposeView: View {
                             
                             
                             Section(header: Text("Where to stick the note?").bold().foregroundStyle(Color.black).font(.body)) {
+                                Picker("", selection: $viewModel.message.room) {
+                                    ForEach(rooms, id: \.self) {
+                                        Text($0)
+                                    }
+                                }
+                                .pickerStyle(.menu)
                                 Picker("", selection: $viewModel.message.location) {
                                     ForEach(locations, id: \.self) {
                                         Text($0)
@@ -198,7 +203,7 @@ struct ComposeView: View {
 //                                        print(dateString)
                                         
                                         // push new msg to array
-                                        let newMessage = Message(sender: viewModel.message.sender, text: viewModel.message.text, location: viewModel.message.location, time: dateString, backgroundColor: viewModel.message.backgroundColor, fontColor: viewModel.message.fontColor, fontSize: viewModel.message.fontSize, drawing: image)
+                                        let newMessage = Message(sender: viewModel.message.sender, text: viewModel.message.text, room: viewModel.message.room, location: viewModel.message.location, time: dateString, backgroundColor: viewModel.message.backgroundColor, fontColor: viewModel.message.fontColor, fontSize: viewModel.message.fontSize, drawing: image)
                                         
                                         viewModel.messages.append(newMessage)
 //                                        print(viewModel.messages)

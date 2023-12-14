@@ -38,7 +38,7 @@ struct NoteDisplayView: View {
                     HStack {
                         Button(action: {
                             self.presentationMode.wrappedValue.dismiss()
-                            viewModel.message = Message(sender: "", text: "", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
+                            viewModel.message = Message(sender: "", text: "", room: "Bedroom", location: "Wall", time: "", backgroundColor: .yellow, fontColor: .white, fontSize: 200)
                         }) {
                             Text("Back")
                             .foregroundStyle(Color.black)
